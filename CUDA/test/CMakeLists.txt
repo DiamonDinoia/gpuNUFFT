@@ -1,13 +1,15 @@
 #setup testframework
 MESSAGE("------setting up testframework-------")
 
-set(GTEST_DIR "${CMAKE_SOURCE_DIR}/../../gtest/googletest")
+set(GTEST_DIR "/mnt/ccnas2/bdp/mb5119/bin/gtest")
 MESSAGE("GTEST_DIR " ${GTEST_DIR})
 
-include_directories("${GTEST_DIR}/include")
+include_directories(${GTEST_DIR}/include)
 
-find_library(GTEST_LIB NAMES gtest libgtest HINTS "${GTEST_DIR}/build" "${GTEST_DIR}/build/Debug")
-find_library(GTESTMAIN_LIB NAMES gtest_main libgtest_main HINTS "${GTEST_DIR}/build" "${GTEST_DIR}/build/Debug")
+#include_directories(${GTEST_INCLUDE_DIRS})
+
+find_library(GTEST_LIB NAMES gtest libgtest HINTS "${GTEST_DIR}/lib" "${GTEST_DIR}/build/Debug")
+find_library(GTESTMAIN_LIB NAMES gtest_main libgtest_main HINTS "${GTEST_DIR}/lib" "${GTEST_DIR}/build/Debug")
 
 MESSAGE("GTEST_LIB = ${GTEST_LIB}")
 MESSAGE("GTESTMAIN_LIB = ${GTESTMAIN_LIB}")

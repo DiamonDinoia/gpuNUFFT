@@ -77,6 +77,14 @@ if (WITH_DEBUG)
 endif()
 MESSAGE(STATUS "Setting DEBUG Option to ${DEBUG}")
 
+message(STATUS "CUDA Architecture: ${ARCH}")
+message(STATUS "CUDA Version: ${CUDA_VERSION_STRING}")
+message(STATUS "CUDA Path: ${CUDA_TOOLKIT_ROOT_DIR}")
+message(STATUS "CUDA Libararies: ${CUDA_LIBRARIES}")
+message(STATUS "CUDA Performance Primitives: ${CUDA_npp_LIBRARY}")
+
+set(CUDA_NVCC_FLAGS "${ARCH}")
+
 #Enable ATOMIC kernel  
 SET(GEN_ATOMIC ON CACHE BOOL "Enable atomic kernel generation (Compute Capability 2.0 needed). Only turn it off when old architectures (<2.0) have to be supported.")
 
@@ -95,33 +103,7 @@ else(GPU_DOUBLE_PREC)
   SET(PREC_SUFFIX "_f")
 endif(GPU_DOUBLE_PREC)
 
-SET(FERMI_GPU OFF CACHE BOOL "Enable build for (old) Fermi architectures (Compute capability 2.0)")
 
-
-IF(FERMI_GPU)
-  set(MY_NVCC_FLAGS -gencode arch=compute_20,code=sm_20)
-  list(APPEND MY_NVCC_FLAGS -gencode arch=compute_30,code=sm_30)
-  list(APPEND MY_NVCC_FLAGS -gencode arch=compute_50,code=sm_50)
-  list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_52,code=sm_52)
-  list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_52,code=compute_52)
-ELSE(FERMI_GPU)
-  set(MY_NVCC_FLAGS -arch=sm_30 -gencode arch=compute_30,code=sm_30)
-  list(APPEND MY_NVCC_FLAGS -gencode arch=compute_50,code=sm_50)
-  list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_52,code=sm_52)
-  list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_52,code=compute_52)
-
-  if(${CUDA_VERSION_MAJOR} STRGREATER "7")
-    message("add CUDA 8 flags: Current version: ${CUDA_VERSION}")
-    list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_60,code=sm_60)
-    list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_61,code=sm_61)
-    list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_61,code=compute_61)
-  endif()
-
-  if(${CUDA_VERSION_MAJOR} STRGREATER "8")
-    message("add CUDA 9 flags: Current version: ${CUDA_VERSION}")
-    list(APPEND MY_NVCC_FLAGS -gencode=arch=compute_70,code=sm_70)
-  endif()
-ENDIF(FERMI_GPU)
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
   MESSAGE("debug mode")
