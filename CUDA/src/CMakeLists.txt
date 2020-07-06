@@ -1,6 +1,6 @@
 MESSAGE("------start creating libraries-------")
 
-SET(GPUNUFFT_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+SET(GPUNUFFT_SRC_DIR ${gpuNUFFT_SOURCE_DIR}/src)
 SET(GPUNUFFT_SOURCES ${GPUNUFFT_SRC_DIR}/gpuNUFFT_utils.cpp
                      ${GPUNUFFT_SRC_DIR}/gpuNUFFT_operator_factory.cpp
                      ${GPUNUFFT_SRC_DIR}/gpuNUFFT_operator.cpp
