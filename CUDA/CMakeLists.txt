@@ -5,22 +5,22 @@ PROJECT(gpuNUFFT)
 #is distributed since version 2.8
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${gpuNUFFT_SOURCE_DIR}/bin)
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${gpuNUFFT_SOURCE_DIR}/bin)
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${gpuNUFFT_SOURCE_DIR}/bin)
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${gpuNUFFT_SOURCE_DIR}/bin)
 
 #for older CMAKE versions these vars have to be set
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-SET(ARCHIVE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+SET(EXECUTABLE_OUTPUT_PATH ${gpuNUFFT_SOURCE_DIR}/bin)
+SET(LIBRARY_OUTPUT_PATH ${gpuNUFFT_SOURCE_DIR}/bin)
+SET(ARCHIVE_OUTPUT_PATH ${gpuNUFFT_SOURCE_DIR}/bin)
 
 #patch output path
-SET(PATCH_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/deploy)
+SET(PATCH_OUTPUT_DIR ${gpuNUFFT_SOURCE_DIR}/deploy)
 SET(PATCH_OUTPUT_PATH ${PATCH_OUTPUT_DIR}/gpuNUFFT.zip)
 
 #mex file export dir
-SET(MEX_EXPORT_DIR ${PROJECT_SOURCE_DIR}/../gpuNUFFT/@gpuNUFFT/private CACHE STRING "Folder in which mex files are exported to.")
+SET(MEX_EXPORT_DIR ${gpuNUFFT_SOURCE_DIR}/../gpuNUFFT/@gpuNUFFT/private CACHE STRING "Folder in which mex files are exported to.")
 
 #Searching CUDA
 FIND_PACKAGE(CUDA REQUIRED)
@@ -33,7 +33,7 @@ endif(WIN32)
 
 #Enable Mex File Generation
 #Searching MATLAB
-SET(GEN_MEX_FILES ON CACHE BOOL "Enable generation of Matlab MEX files.")
+SET(GEN_MEX_FILES OFF CACHE BOOL "Enable generation of Matlab MEX files.")
 
 if(GEN_MEX_FILES)
   if(WIN32)
@@ -76,14 +76,14 @@ if (WITH_DEBUG)
  SET (DEBUG true)
 endif()
 MESSAGE(STATUS "Setting DEBUG Option to ${DEBUG}")
-
-message(STATUS "CUDA Architecture: ${ARCH}")
+CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCHS Auto)
+message(STATUS "CUDA Architecture: ${CUDA_ARCHS}")
 message(STATUS "CUDA Version: ${CUDA_VERSION_STRING}")
 message(STATUS "CUDA Path: ${CUDA_TOOLKIT_ROOT_DIR}")
 message(STATUS "CUDA Libararies: ${CUDA_LIBRARIES}")
 message(STATUS "CUDA Performance Primitives: ${CUDA_npp_LIBRARY}")
 
-set(CUDA_NVCC_FLAGS "${ARCH}")
+LIST(APPEND CUDA_NVCC_FLAGS "--default-stream=per-thread" "${CUDA_ARCHS}")
 
 #Enable ATOMIC kernel  
 SET(GEN_ATOMIC ON CACHE BOOL "Enable atomic kernel generation (Compute Capability 2.0 needed). Only turn it off when old architectures (<2.0) have to be supported.")
@@ -130,12 +130,12 @@ SET(GRID_MEX_PRECOMP_NAME "mex_gpuNUFFT_precomp${PREC_SUFFIX}")
 
 MESSAGE(STATUS "creating lib with name: ${GRID_LIB_NAME}")
 SET(WARNING "/* WARNING: Automatically generated file. Please do not modify this file. */")
-CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/inc/config.hpp.cmake ${CMAKE_SOURCE_DIR}/inc/config.hpp)
-CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/inc/cufft_config.hpp.cmake ${CMAKE_SOURCE_DIR}/inc/cufft_config.hpp)
+CONFIGURE_FILE( ${gpuNUFFT_SOURCE_DIR}/inc/config.hpp.cmake ${gpuNUFFT_SOURCE_DIR}/inc/config.hpp)
+CONFIGURE_FILE( ${gpuNUFFT_SOURCE_DIR}/inc/cufft_config.hpp.cmake ${gpuNUFFT_SOURCE_DIR}/inc/cufft_config.hpp)
 
 #Include dirs
 include_directories(inc)
-SET(GPUNUFFT_INC_DIR ${CMAKE_SOURCE_DIR}/inc)
+SET(GPUNUFFT_INC_DIR ${gpuNUFFT_SOURCE_DIR}/inc)
 SET(GPUNUFFT_INCLUDE ${GPUNUFFT_INC_DIR}/cuda_utils.hpp 
 										 ${GPUNUFFT_INC_DIR}/cuda_utils.cuh
 										 ${GPUNUFFT_INC_DIR}/config.hpp
@@ -187,15 +187,15 @@ if (GEN_ZIP)
 	MESSAGE(${PATCH_OUTPUT_PATH})
 	execute_process(
 	    COMMAND 
-		"find" "${CMAKE_CURRENT_SOURCE_DIR}/src" "-not" "-name" "CMakeLists.txt" "-not" "-type" "d" 
+		"find" "${gpuNUFFT_SOURCE_DIR}/src" "-not" "-name" "CMakeLists.txt" "-not" "-type" "d" 
 OUTPUT_VARIABLE _file_list
 	)
 #MESSAGE(${_file_list})	
 	execute_process( 
     COMMAND "${Java_JAR_EXECUTABLE}" "cfM" "${PATCH_OUTPUT_PATH}" "`" 
-		"find" "${CMAKE_CURRENT_SOURCE_DIR}/src" "-not" "-name" "CMakeLists.txt" "-not" "-type" "d" "`"
-#		"-C" ${CMAKE_CURRENT_SOURCE_DIR} "inc" 
-#		"-C" ${CMAKE_CURRENT_SOURCE_DIR} "matlab/gpuNUFFT"
+		"find" "${gpuNUFFT_SOURCE_DIR}/src" "-not" "-name" "CMakeLists.txt" "-not" "-type" "d" "`"
+#		"-C" ${gpuNUFFT_SOURCE_DIR} "inc" 
+#		"-C" ${gpuNUFFT_SOURCE_DIR} "matlab/gpuNUFFT"
 	    RESULT_VARIABLE _result
 	)
 endif(GEN_ZIP)
