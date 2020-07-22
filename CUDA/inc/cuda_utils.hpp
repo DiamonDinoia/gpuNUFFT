@@ -155,7 +155,7 @@ inline void freeTotalDeviceMemory(void *ptr, ...)
 inline dim3 getOptimalGridDim(long N, long thread_count)
 {
   return dim3(MIN((N + thread_count - 1) / thread_count,
-                  128 * 128));  // 128*128 empiric, max is 256*256 = 65536
+                  256 * 256));  // 128*128 empiric, max is 256*256 = 65536
 }
 
 /** \brief Compute optimal 2d block dimensions for given thread count in y
